@@ -1,0 +1,22 @@
+# Build & IDE directories
+**/target/
+**/build/
+.idea/
+*.iml
+.vscode/
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment
+.env
+
+# Node
+node_modules/
+npm-debug.log
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
