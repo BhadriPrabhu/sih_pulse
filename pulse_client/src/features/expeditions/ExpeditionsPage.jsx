@@ -98,58 +98,6 @@ export default function ExpeditionsPage() {
   return (
     <PageShell title="Expedition logs" terracottaWord="logs" subtitle="Tracing decades of polar exploration through the official field notebooks." heroCrop="left 70%">
       
-      {/* Map Strip */}
-      <div className="w-full bg-[#E5DCC5]/30 border-b border-ink/10 py-12 px-6 overflow-hidden relative">
-        <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-around gap-12 relative z-10">
-          {/* North Pole Map */}
-          <div className="relative w-48 h-48 rounded-full border border-ink/20 bg-paper shadow-inner flex items-center justify-center wobble-edge">
-             <span className="absolute top-2 font-typewriter text-[10px] text-ink/40">Arctic</span>
-             <Doodle type="tent" className="absolute opacity-5 text-ink w-32 h-32" />
-             {expeditionsData.filter(e => e.map === 'north' || e.region === 'Arctic').map(station => (
-               <div 
-                 key={station.id}
-                 onClick={() => openSheet(station.id)}
-                 onMouseEnter={() => setHoveredPin(station.id)}
-                 onMouseLeave={() => setHoveredPin(null)}
-                 className="absolute w-3 h-3 bg-terracotta rounded-full shadow-sm cursor-pointer hover:scale-150 transition-transform z-20"
-                 style={{ left: `${station.coords.x}%`, top: `${station.coords.y}%` }}
-               >
-                 <AnimatePresence>
-                   {hoveredPin === station.id && (
-                     <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 5 }} className="absolute -top-8 left-1/2 -translate-x-1/2 bg-paper-lighter px-2 py-1 text-[10px] font-typewriter whitespace-nowrap shadow-sm border border-ink/10 pointer-events-none">
-                       {station.title.split(':')[1] || station.title}
-                     </motion.div>
-                   )}
-                 </AnimatePresence>
-               </div>
-             ))}
-          </div>
-
-          {/* South Pole Map */}
-          <div className="relative w-56 h-56 rounded-full border border-ink/20 bg-paper shadow-inner flex items-center justify-center wobble-edge">
-             <span className="absolute top-4 font-typewriter text-[10px] text-ink/40">Antarctica</span>
-             <Doodle type="iceCore" className="absolute opacity-5 text-ink w-40 h-40 transform rotate-45" />
-             {expeditionsData.filter(e => e.map === 'south' || e.region === 'Antarctica').map(station => (
-               <div 
-                 key={station.id}
-                 onClick={() => openSheet(station.id)}
-                 onMouseEnter={() => setHoveredPin(station.id)}
-                 onMouseLeave={() => setHoveredPin(null)}
-                 className="absolute w-3 h-3 bg-teal-ink rounded-full shadow-sm cursor-pointer hover:scale-150 transition-transform z-20"
-                 style={{ left: `${station.coords.x}%`, top: `${station.coords.y}%` }}
-               >
-                 <AnimatePresence>
-                   {hoveredPin === station.id && (
-                     <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 5 }} className="absolute -top-8 left-1/2 -translate-x-1/2 bg-paper-lighter px-2 py-1 text-[10px] font-typewriter whitespace-nowrap shadow-sm border border-ink/10 pointer-events-none z-30">
-                       {station.title.split(':')[1] || station.title}
-                     </motion.div>
-                   )}
-                 </AnimatePresence>
-               </div>
-             ))}
-          </div>
-        </div>
-      </div>
 
       <div className="max-w-5xl mx-auto px-6 pb-32 w-full mt-12 relative">
         
