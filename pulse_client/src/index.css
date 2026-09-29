@@ -1,31 +1,50 @@
 @import "tailwindcss";
 
+@theme {
+  --color-paper: #F6F0E4;
+  --color-paper-deep: #EDE4D3;
+  --color-paper-lighter: #FBF7EE;
+  --color-ink: #1B1A17;
+  --color-terracotta: #B5502D;
+  --color-glacier: #9DB4B8;
+  --color-teal-ink: #23414A;
+  --color-sage: #7C8A6A;
+  --color-mustard: #D9A441;
+  
+  --font-grotesque: "Bricolage Grotesque", sans-serif;
+  --font-body: "DM Sans", sans-serif;
+  --font-typewriter: "Special Elite", monospace;
+  --font-hand: "Caveat", cursive;
+  
+  --shadow-paper-soft: 0 8px 30px rgba(27, 26, 23, 0.04), 0 4px 10px rgba(27, 26, 23, 0.02);
+  --shadow-paper-lift: 0 15px 40px rgba(27, 26, 23, 0.06), 0 6px 15px rgba(27, 26, 23, 0.03);
+}
+
 @layer base {
   body {
-    @apply text-white overflow-x-hidden;
-    background-color: #050505;
+    @apply bg-paper text-ink font-body selection:bg-terracotta selection:text-paper;
+    /* Faint paper fiber blotches using large, soft radial gradients */
     background-image: 
-      radial-gradient(circle at 15% 50%, rgba(10, 37, 64, 0.4) 0%, transparent 40%),
-      radial-gradient(circle at 85% 30%, rgba(0, 229, 255, 0.05) 0%, transparent 40%),
-      url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 100 Q 25 50 50 100 T 100 100' stroke='rgba(255,255,255,0.02)' fill='none' stroke-width='1'/%3E%3C/svg%3E");
+      radial-gradient(circle at 15% 20%, rgba(237, 228, 211, 0.35) 0%, transparent 25%),
+      radial-gradient(circle at 85% 60%, rgba(237, 228, 211, 0.4) 0%, transparent 30%),
+      radial-gradient(circle at 40% 90%, rgba(237, 228, 211, 0.3) 0%, transparent 20%);
     background-attachment: fixed;
-    font-family: 'Space Grotesk', sans-serif;
-  }
-  
-  .font-mono {
-    font-family: 'JetBrains Mono', monospace;
+    overflow-x: hidden;
   }
 }
 
-/* Add these below your existing code */
 @layer utilities {
-  .text-glow-cyan {
-    text-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
+  .text-balance {
+    text-wrap: balance;
   }
-  .shadow-glow-cyan {
-    box-shadow: 0 0 30px rgba(0, 229, 255, 0.15);
+  .wobble-edge {
+    filter: url(#wobble-filter);
   }
-  .glass-border {
-    @apply border border-white/[0.08];
+  .notebook-lines {
+    background-image: repeating-linear-gradient(transparent, transparent 27px, #9DB4B8 28px);
+    background-attachment: local;
+  }
+  .torn-edge {
+    clip-path: polygon(0% 0%, 100% 0%, 100% 98%, 98% 100%, 95% 97%, 92% 100%, 88% 97%, 85% 100%, 82% 98%, 78% 100%, 75% 97%, 72% 100%, 68% 98%, 65% 100%, 62% 97%, 58% 100%, 55% 98%, 52% 100%, 48% 97%, 45% 100%, 42% 98%, 38% 100%, 35% 97%, 32% 100%, 28% 98%, 25% 100%, 22% 97%, 18% 100%, 15% 98%, 12% 100%, 8% 97%, 5% 100%, 2% 98%, 0% 100%);
   }
 }
