@@ -20,17 +20,14 @@ export default function Doodle({ type, className = "w-14 h-14", stroke = "#1B1A1
         <rect x="2" y="4" width="20" height="14" rx="1" fill={fill} />
         <path d="M6 22L10 18L14 22" />
         <path d="M4 22H20" />
-        {/* Simple globe doodle inside the board */}
         <circle cx="12" cy="11" r="3" fill="none" />
         <path d="M9 11C9 13 15 13 15 11" />
       </g>
     ),
-    footprints: (
-      <g fill={fill} opacity="0.3">
-        <path d="M4 18C5 17 6 18 5 20C4 22 3 21 4 18Z" />
-        <path d="M8 14C9 13 10 14 9 16C8 18 7 17 8 14Z" />
-        <path d="M14 10C15 9 16 10 15 12C14 14 13 13 14 10Z" />
-        <path d="M18 6C19 5 20 6 19 8C18 10 17 9 18 6Z" />
+    compass: (
+      <g stroke={stroke} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10" fill={fill} />
+        <path d="M12 6L14.5 12L12 18L9.5 12Z" />
       </g>
     ),
     penguin: (
@@ -40,6 +37,28 @@ export default function Doodle({ type, className = "w-14 h-14", stroke = "#1B1A1
         <path d="M11 11.5L12 13L13 11.5" fill={stroke} />
         <path d="M6 12C4 13 2 16 2 16" />
         <path d="M18 12C20 13 22 16 22 16" />
+      </g>
+    ),
+    ship: (
+      <g stroke={stroke} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill={fill}>
+        <path d="M2 16L5 21H19L22 16Z" />
+        <path d="M6 16V8L12 16Z" fill="none" />
+        <path d="M12 16V4L18 16Z" fill="none" />
+      </g>
+    ),
+    tent: (
+      <g stroke={stroke} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill={fill}>
+        <path d="M12 4L2 20H22Z" />
+        <path d="M12 4V20" />
+        <path d="M7 20L12 14L17 20" fill="none" />
+      </g>
+    ),
+    footprints: (
+      <g fill={fill} opacity="0.3">
+        <path d="M4 18C5 17 6 18 5 20C4 22 3 21 4 18Z" />
+        <path d="M8 14C9 13 10 14 9 16C8 18 7 17 8 14Z" />
+        <path d="M14 10C15 9 16 10 15 12C14 14 13 13 14 10Z" />
+        <path d="M18 6C19 5 20 6 19 8C18 10 17 9 18 6Z" />
       </g>
     ),
     wavyDivider: (
@@ -53,8 +72,15 @@ export default function Doodle({ type, className = "w-14 h-14", stroke = "#1B1A1
     )
   };
 
+  const isDivider = type === 'wavyDivider';
+
   return (
-    <svg viewBox="0 0 24 24" className={className} style={type === 'wavyDivider' ? { width: '100%', height: '100%' } : {}}>
+    <svg 
+      viewBox={isDivider ? "0 0 400 20" : "0 0 24 24"} 
+      preserveAspectRatio={isDivider ? "none" : "xMidYMid meet"}
+      className={className} 
+      style={isDivider ? { width: '100%', height: '100%' } : {}}
+    >
       {strokes[type]}
     </svg>
   );

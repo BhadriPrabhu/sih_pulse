@@ -1,23 +1,16 @@
+import { BrowserRouter } from 'react-router-dom';
 import PaperTexture from './components/ui/PaperTexture';
 import Navbar from './components/layout/Navbar';
-import Hero from './features/landing/Hero';
-import Pillars from './features/landing/Pillars';
-import FieldNotes from './features/landing/FieldNotes';
-import Footer from './features/landing/Footer';
+import AppRouter from './router/AppRouter';
 
 export default function App() {
   return (
-    <div className="relative min-h-screen">
-      <PaperTexture />
-      <Navbar />
-      
-      <main>
-        <Hero />
-        <Pillars />
-        <FieldNotes />
-      </main>
-
-      <Footer />
-    </div>
+    <BrowserRouter>
+      <div className="relative min-h-screen flex flex-col">
+        <PaperTexture />
+        <Navbar />
+        <AppRouter />
+      </div>
+    </BrowserRouter>
   );
 }
