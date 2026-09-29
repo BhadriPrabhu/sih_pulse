@@ -14,7 +14,7 @@ export default function LearnPage() {
       title="Bring the poles to your classroom" 
       terracottaWord="classroom"
       subtitle="Interactive labs, real dataset math problems, and live calls with our researchers."
-      heroCrop="right 40%" 
+      heroCrop="85% 60%"
     >
       <div className="max-w-6xl mx-auto px-6 pb-32 w-full mt-4 flex flex-col gap-24">
         
@@ -41,10 +41,10 @@ export default function LearnPage() {
                 className={`relative w-full md:w-[320px] ${kit.offset} cursor-pointer group`}
               >
                 {/* Folder Tab */}
-                <div className={`absolute -top-6 left-0 w-1/2 h-8 rounded-t-xl border-t border-l border-r ${kit.border} ${kit.tabColor}`} />
+                <div className={`absolute -top-6 left-0 w-1/2 h-8 rounded-t-xl ${kit.tabColor}`} />
                 
                 {/* Folder Body */}
-                <div className={`relative w-full min-h-[220px] rounded-b-xl rounded-tr-xl border ${kit.border} ${kit.color} p-6 flex flex-col shadow-paper-soft hover:shadow-paper-lift transition-shadow backdrop-blur-sm`}>
+                <div className={`relative w-full min-h-[220px] rounded-b-xl rounded-tr-xl ${kit.color} p-6 flex flex-col shadow-[0_10px_24px_rgba(120,90,50,0.15)] hover:-translate-y-2 transition-transform`}>
                   <p className="font-typewriter text-xs text-ink/60 mb-1">{kit.grade} // {kit.duration}</p>
                   <h3 className="font-grotesque text-2xl text-ink mb-6 mt-2 leading-tight pr-4">
                     {kit.title}

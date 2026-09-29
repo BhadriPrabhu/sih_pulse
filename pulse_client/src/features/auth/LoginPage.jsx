@@ -13,9 +13,9 @@ export default function LoginPage() {
       title="Welcome back" 
       terracottaWord="back"
       subtitle="Access your saved datasets, expedition logs, and field notes."
-      heroCrop="center 85%" 
+      heroCrop="55% 85%" 
     >
-      <div className="max-w-6xl mx-auto px-6 pb-32 w-full mt-16 flex flex-col md:flex-row items-center gap-16 md:gap-24">
+      <div className="max-w-6xl mx-auto px-6 pb-32 w-full mt-4 flex flex-col md:flex-row items-center gap-16 md:gap-24">
         
         {/* Left Column: Quote & Graphic */}
         <motion.div 
