@@ -1,24 +1,23 @@
-import './App.css';
+import PaperTexture from './components/ui/PaperTexture';
+import Navbar from './components/layout/Navbar';
+import Hero from './features/landing/Hero';
+import Pillars from './features/landing/Pillars';
+import FieldNotes from './features/landing/FieldNotes';
+import Footer from './features/landing/Footer';
 
-function App() {
+export default function App() {
   return (
-    <main className="min-h-screen flex items-center justify-center bg-[#FAFAFA] px-4">
-      <div className="text-center">
-        <h1 className="text-2xl font-medium text-zinc-800 tracking-tight mb-1">
-          Project Pulse
-        </h1>
-        
-        <p className="text-zinc-500 text-sm">
-          SIH Problem Statement 26063
-        </p>
+    <div className="relative min-h-screen">
+      <PaperTexture />
+      <Navbar />
+      
+      <main>
+        <Hero />
+        <Pillars />
+        <FieldNotes />
+      </main>
 
-        <p className="text-cyan-700 text-xs mb-6">
-          Team Null Hypothesis
-        </p>
-        
-      </div>
-    </main>
+      <Footer />
+    </div>
   );
 }
-
-export default App;
