@@ -3,14 +3,18 @@ export default async function handler(req, res) {
 
   const { query, context } = req.body;
   const apiKey = process.env.GEMINI_API_KEY;
-  
-  // Clean the model name just in case it was saved as "models/gemini-1.5-flash" in Vercel
-  const rawModel = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
-  const modelName = rawModel.replace(/^models\//, '');
 
   if (!apiKey) {
     return res.status(500).json({ error: 'GEMINI_API_KEY is missing' });
   }
+
+  // Try standard active model names in order of preference
+  const modelsToTry = [
+    process.env.GEMINI_MODEL?.replace(/^models\//, ''),
+    'gemini-3.8-flash',
+    'gemini-2.5-flash',
+    'gemini-1.5-flash'
+  ].filter(Boolean);
 
   const systemPrompt = `You are a polar science guide for Indian students and researchers. 
 Answer in 2 short paragraphs, plain language, adjust to any grade level mentioned, never invent statistics. 
@@ -28,38 +32,44 @@ Respond strictly in JSON format:
   "kitIds": ["matched_id_1"]
 }`;
 
-  try {
-    // Upgraded endpoint from v1beta to v1
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${apiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ role: "user", parts: [{ text: query }] }],
-        systemInstruction: { role: "system", parts: [{ text: systemPrompt }] },
-        generationConfig: { responseMimeType: "application/json" }
-      })
-    });
+  let lastError = null;
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Gemini API rejected request: ${errorText}`);
+  for (const modelName of modelsToTry) {
+    try {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: [{ text: query }] }],
+          systemInstruction: { role: "system", parts: [{ text: systemPrompt }] },
+          generationConfig: { responseMimeType: "application/json" }
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Model ${modelName} rejected request: ${errorText}`);
+      }
+      
+      const data = await response.json();
+      let jsonString = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!jsonString) throw new Error(`Model ${modelName} returned empty text.`);
+
+      jsonString = jsonString.replace(/```json/gi, '').replace(/```/g, '').trim();
+      const result = JSON.parse(jsonString);
+      
+      // Success! Return immediately
+      return res.status(200).json(result);
+
+    } catch (err) {
+      console.warn(`Attempt with model ${modelName} failed:`, err.message);
+      lastError = err;
     }
-    
-    const data = await response.json();
-    
-    let jsonString = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!jsonString) throw new Error("Gemini returned an empty or invalid response format.");
-
-    jsonString = jsonString.replace(/```json/gi, '').replace(/```/g, '').trim();
-    
-    const result = JSON.parse(jsonString);
-    res.status(200).json(result);
-
-  } catch (error) {
-    console.error("Gemini API Error:", error);
-    res.status(500).json({ 
-      error: 'Failed to generate response', 
-      details: error.message 
-    });
   }
+
+  // If all model options fail, return details
+  res.status(500).json({ 
+    error: 'Failed to generate response', 
+    details: lastError?.message || 'All model attempts failed.' 
+  });
 }
