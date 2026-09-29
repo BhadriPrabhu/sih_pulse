@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
 import { Paperclip } from 'lucide-react';
 import PillButton from '../../components/ui/PillButton';
+import { useNavigate } from 'react-router-dom';
 
 const PROMPTS = [
   "I'm in class 9 and want to understand why Antarctic ice is melting. Show me simple data and a short video.",
@@ -52,6 +53,19 @@ export default function Hero() {
   }, [promptText, isDeleting, promptIndex, prefersReducedMotion]);
 
   const titleWords = "What do you want to know about".split(" ");
+
+  const navigate = useNavigate();
+  const [userInput, setUserInput] = useState("");
+
+  const handleSearch = (e) => {
+    e?.preventDefault();
+    const q = userInput.trim() || promptText;
+    navigate(`/explore?q=${encodeURIComponent(q)}`);
+  };
+
+  const handleChipClick = (chip) => {
+    navigate(`/explore?q=${encodeURIComponent(chip)}`);
+  };
 
   return (
     <section className="relative min-h-screen pt-32 pb-64 flex flex-col items-center justify-start overflow-hidden">
@@ -111,34 +125,49 @@ export default function Hero() {
           transition={{ delay: 0.8, type: "spring", stiffness: 80, damping: 15 }}
           className="w-full max-w-[720px]"
         >
-          <div className="relative bg-paper-lighter rounded-3xl p-6 shadow-paper-soft wobble-edge border border-ink/10 flex flex-col min-h-[160px] text-left">
-            <p className="font-typewriter text-ink/80 text-lg leading-relaxed min-h-[80px]">
-              {promptText}
-              <span className="animate-pulse ml-1 inline-block w-2 h-5 bg-terracotta/60 align-middle -mt-1" />
-            </p>
+          <form 
+            onSubmit={handleSearch}
+            className="relative bg-paper-lighter rounded-3xl p-6 shadow-paper-soft wobble-edge border border-ink/10 flex flex-col min-h-[160px] text-left cursor-text"
+            onClick={(e) => e.currentTarget.querySelector('textarea').focus()}
+          >
+            <div className="relative flex-grow min-h-[80px]">
+              {userInput === "" && (
+                <p className="absolute inset-0 font-typewriter text-ink/50 text-lg leading-relaxed pointer-events-none">
+                  {promptText}
+                  <span className="animate-pulse ml-1 inline-block w-2 h-5 bg-terracotta/60 align-middle -mt-1" />
+                </p>
+              )}
+              <textarea 
+                value={userInput}
+                onChange={(e) => setUserInput(e.target.value)}
+                className="w-full h-full bg-transparent font-typewriter text-ink/90 text-lg leading-relaxed resize-none focus:outline-none relative z-10"
+                rows={3}
+              />
+            </div>
             
             <div className="mt-auto flex items-center justify-between pt-4 border-t border-ink/5">
-              <button className="text-ink/40 hover:text-ink/80 transition-colors flex items-center gap-2 text-sm font-body">
+              <button type="button" className="text-ink/40 hover:text-ink/80 transition-colors flex items-center gap-2 text-sm font-body">
                 <Paperclip size={18} strokeWidth={1.5} />
                 Attach file
               </button>
-              <PillButton>Search the archive</PillButton>
+              <PillButton onClick={handleSearch}>Search the archive</PillButton>
             </div>
-          </div>
+          </form>
         </motion.div>
 
         {/* Suggestion Chips */}
         <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2, duration: 0.8 }}
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2, duration: 0.8 }}
           className="relative mt-6 py-2 px-12 flex flex-wrap items-center justify-center gap-6"
         >
-          {/* Faded background strip to ensure readability over the illustration */}
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-paper to-transparent opacity-95 -z-10 w-[120%] -left-[10%]" />
           
           {["Life at Bharati station", "Ice core datasets", "Ask a scientist"].map((chip) => (
-            <button key={chip} className="text-sm font-body text-ink/70 hover:text-ink relative group">
+            <button 
+              key={chip} 
+              onClick={() => handleChipClick(chip)}
+              className="text-sm font-body text-ink/70 hover:text-ink relative group"
+            >
               {chip}
               <svg className="absolute -bottom-1 left-0 w-full h-1 text-terracotta opacity-0 group-hover:opacity-100 transition-opacity" viewBox="0 0 100 10" preserveAspectRatio="none">
                 <path d="M0 5 Q 50 8 100 2" fill="none" stroke="currentColor" strokeWidth="2" />
