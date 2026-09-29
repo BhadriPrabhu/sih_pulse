@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Paperclip } from 'lucide-react';
@@ -20,62 +20,115 @@ export default function ExplorePage() {
   const [prompt, setPrompt] = useState(initialQuery);
   const [isSearching, setIsSearching] = useState(true);
   const [results, setResults] = useState(null);
+  
   const { searches, addSearch } = useRecentSearches();
+  const searchRecorded = useRef(false);
 
-  const executeSearch = async (query) => {
-    setIsSearching(true);
-    addSearch(query);
+  useEffect(() => {
+    setPrompt(initialQuery);
     
-    if (!query) {
+    if (!initialQuery) {
       setResults({ answer: "What would you like to know? Enter a topic above to search the polar archives.", keyTerms: [], datasetIds: [], mediaIds: [], kitIds: [] });
       setIsSearching(false);
+      searchRecorded.current = false;
       return;
     }
 
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 8000); // 8s timeout
-
-      const res = await fetch('/api/ask', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query, context: getSearchContext() }),
-        signal: controller.signal
-      });
-      
-      clearTimeout(timeoutId);
-      
-      if (!res.ok) throw new Error("API failed");
-      const data = await res.json();
-      setResults(data);
-    } catch (error) {
-      console.warn("Using offline fallback due to API error or timeout.");
-      setResults(runFallbackSearch(query));
-    } finally {
-      setIsSearching(false);
+    if (!searchRecorded.current) {
+      addSearch(initialQuery);
+      searchRecorded.current = true;
     }
-  };
 
-  // Run search on mount or URL change
-  useEffect(() => {
-    setPrompt(initialQuery);
-    executeSearch(initialQuery);
-  }, [initialQuery]);
+    setIsSearching(true);
+    const controller = new AbortController();
+    let cancelled = false;
+
+    const executeSearch = async () => {
+      try {
+        const timeoutId = setTimeout(() => controller.abort(), 25000); // 25s client timeout
+        
+        const res = await fetch('/api/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: initialQuery, context: getSearchContext() }),
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        const textStr = await res.text();
+        
+        let data;
+        try {
+          data = JSON.parse(textStr);
+        } catch (err) {
+          console.error("Invalid JSON response:", res.status, textStr.substring(0, 200));
+          throw new Error("Invalid response format");
+        }
+
+        if (!res.ok) {
+          console.error("API failed:", res.status, data.attempts || data.error);
+          throw new Error("API responded with an error");
+        }
+
+        if (!cancelled) {
+          setResults({
+            answer: String(data.answer || ""),
+            keyTerms: Array.isArray(data.keyTerms) ? data.keyTerms.map(String) : [],
+            datasetIds: Array.isArray(data.datasetIds) ? data.datasetIds.map(String) : [],
+            mediaIds: Array.isArray(data.mediaIds) ? data.mediaIds.map(String) : [],
+            kitIds: Array.isArray(data.kitIds) ? data.kitIds.map(String) : [],
+            source: data.source,
+            model: data.model
+          });
+        }
+      } catch (error) {
+        if (!cancelled) {
+          console.warn("Using offline fallback due to API error or timeout.");
+          const fallback = runFallbackSearch(initialQuery);
+          setResults({
+            answer: String(fallback.answer || ""),
+            keyTerms: Array.isArray(fallback.keyTerms) ? fallback.keyTerms.map(String) : [],
+            datasetIds: Array.isArray(fallback.datasetIds) ? fallback.datasetIds.map(String) : [],
+            mediaIds: Array.isArray(fallback.mediaIds) ? fallback.mediaIds.map(String) : [],
+            kitIds: Array.isArray(fallback.kitIds) ? fallback.kitIds.map(String) : [],
+            source: "offline"
+          });
+        }
+      } finally {
+        if (!cancelled) {
+          setIsSearching(false);
+        }
+      }
+    };
+
+    executeSearch();
+
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
+  }, [initialQuery, addSearch]);
 
   const handleRefine = () => {
     if (prompt.trim() !== initialQuery) {
+      searchRecorded.current = false;
       navigate(`/explore?q=${encodeURIComponent(prompt)}`);
     }
   };
 
-  // Helper to safely highlight terms in the answer
+  const escapeRegExp = (string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
   const renderHighlightedText = (text, terms = []) => {
-    if (!terms.length) return text;
-    const regex = new RegExp(`(${terms.join('|')})`, 'gi');
+    const validTerms = terms.filter(t => t.trim() !== '');
+    if (!validTerms.length) return text;
+    
+    const escapedTerms = validTerms.map(escapeRegExp);
+    const regex = new RegExp(`(${escapedTerms.join('|')})`, 'gi');
     const parts = text.split(regex);
     
     return parts.map((part, i) => 
-      terms.some(t => t.toLowerCase() === part.toLowerCase()) ? (
+      validTerms.some(t => t.toLowerCase() === part.toLowerCase()) ? (
         <span key={i} className="underline decoration-terracotta/40 decoration-2 underline-offset-4">{part}</span>
       ) : part
     );
@@ -98,13 +151,11 @@ export default function ExplorePage() {
     );
   }
 
-  // Filter actual data based on returned IDs
-  const matchedDatasets = libraryData.filter(d => results?.datasetIds?.includes(d.id));
-  const matchedMedia = mediaData.filter(m => results?.mediaIds?.includes(m.id));
-  const matchedKits = lessonKits.filter(k => results?.kitIds?.includes(k.id));
-  
-  // Split the answer into paragraphs
-  const answerParagraphs = results?.answer?.split('\n').filter(p => p.trim() !== '') || [];
+  const matchedDatasets = libraryData.filter(d => results?.datasetIds?.includes(String(d.id)));
+  const matchedMedia = mediaData.filter(m => results?.mediaIds?.includes(String(m.id)));
+  const matchedKits = lessonKits.filter(k => results?.kitIds?.includes(String(k.id)));
+  const answerParagraphs = results?.answer?.split(/\n+/).filter(p => p.trim() !== '') || [];
+  const isDebug = searchParams.get('debug') === '1';
 
   return (
     <PageShell title="Your research desk" terracottaWord="desk" subtitle="Here is what I gathered from the latest field reports and climate databases." heroCrop="center 65%">
@@ -137,7 +188,7 @@ export default function ExplorePage() {
             {searches.map((s, i) => (
               <button 
                 key={i} 
-                onClick={() => navigate(`/explore?q=${encodeURIComponent(s)}`)}
+                onClick={() => { searchRecorded.current = false; navigate(`/explore?q=${encodeURIComponent(s)}`); }}
                 className="bg-[#F8F5EE] border border-ink/5 px-3 py-1 font-hand text-ink/70 hover:text-terracotta hover:-translate-y-0.5 transition-all text-sm shadow-sm"
                 style={{ clipPath: 'polygon(0% 0%, 100% 2%, 98% 100%, 2% 98%)', transform: `rotate(${i % 2 === 0 ? -1 : 1.5}deg)` }}
               >
@@ -152,12 +203,17 @@ export default function ExplorePage() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ type: "spring", stiffness: 70, damping: 20, delay: 0.1 }} className="max-w-3xl mb-20">
             <div className="flex items-start gap-4">
               <Doodle type="iceCore" className="w-10 h-10 text-teal-ink shrink-0 mt-1" fill="#23414A" />
-              <div>
+              <div className="flex flex-col">
                 {answerParagraphs.map((para, i) => (
                   <p key={i} className="font-body text-ink/80 text-lg leading-relaxed mb-4">
                     {renderHighlightedText(para, results.keyTerms)}
                   </p>
                 ))}
+                {isDebug && results.source && (
+                  <p className="font-typewriter text-[10px] text-ink/40 mt-2 opacity-70 border-t border-ink/5 pt-2">
+                    {results.source === 'gemini' ? `Answered by the archive assistant (${results.model})` : 'Answered from the offline archive'}
+                  </p>
+                )}
               </div>
             </div>
           </motion.div>
