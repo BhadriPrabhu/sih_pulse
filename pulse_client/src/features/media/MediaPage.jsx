@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import PageShell from '../../components/layout/PageShell';
 import { mediaData } from '../../data/mediaData';
+import Doodle from '../../components/ui/Doodle';
 
 const TABS = ["All", "Photos", "Videos", "Aurora", "Wildlife", "Life at station"];
 
@@ -45,6 +46,30 @@ function SceneGraphic({ scene }) {
           <div className="absolute bottom-2 left-6 w-12 h-6 bg-paper rounded-sm transform -rotate-3" />
         </div>
       );
+    case 'tent':
+      return (
+        <div className="w-full h-full bg-[#1e2a33] relative overflow-hidden">
+          <div className="absolute bottom-0 w-full h-1/3 bg-paper" />
+          <div className="absolute bottom-1/4 left-1/3 w-1/3 h-1/3 bg-sage rounded-t-lg" style={{ clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)' }} />
+          <div className="absolute top-6 left-6 w-1 h-1 bg-white rounded-full opacity-60" />
+        </div>
+      );
+    case 'iceberg':
+      return (
+        <div className="w-full h-full bg-paper relative overflow-hidden">
+          <div className="absolute bottom-0 w-full h-2/5 bg-[#2b4c57]" />
+          <div className="absolute bottom-1/3 left-1/4 w-1/2 h-1/2 bg-white" style={{ clipPath: 'polygon(30% 0%, 70% 20%, 100% 100%, 0% 100%)' }} />
+        </div>
+      );
+    case 'station':
+      return (
+        <div className="w-full h-full bg-[#D1DFDF] relative overflow-hidden">
+          <div className="absolute bottom-0 w-full h-1/4 bg-ink/10" />
+          <div className="absolute bottom-1/5 left-1/4 w-1/2 h-1/4 border-b-4 border-l-2 border-r-2 border-ink">
+            <div className="w-full h-full bg-terracotta relative -top-2" />
+          </div>
+        </div>
+      );
     case 'glacier':
     default:
       return (
@@ -76,7 +101,7 @@ export default function MediaPage() {
       title="Media library" 
       terracottaWord="library"
       subtitle="Raw footage, timelapses, and expedition photography from the field."
-      heroCrop="left 75%" 
+      heroCrop="60% 80%"
     >
       <div className="max-w-7xl mx-auto px-6 pb-32 w-full">
         
@@ -112,7 +137,7 @@ export default function MediaPage() {
 
         {/* Masonry Grid */}
         <div className="columns-2 md:columns-3 lg:columns-4 gap-6 space-y-6">
-          <AnimatePresence>
+          <AnimatePresence mode="popLayout">
             {filteredMedia.map((item) => (
               <motion.div
                 layout
@@ -131,9 +156,9 @@ export default function MediaPage() {
                   <div className={`w-full ${item.heightClass} border border-ink/5 relative`}>
                     <SceneGraphic scene={item.scene} />
                     {item.type === "Video" && (
-                      <div className="absolute inset-0 bg-ink/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div className="w-10 h-10 rounded-full border-2 border-white flex items-center justify-center backdrop-blur-sm">
-                           <svg className="w-4 h-4 text-white ml-1" viewBox="0 0 24 24" fill="currentColor"><path d="M5 3L19 12L5 21V3Z"/></svg>
+                      <div className="absolute inset-0 bg-ink/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="w-12 h-12 rounded-full border-2 border-white flex items-center justify-center backdrop-blur-sm">
+                           <Doodle type="play" className="w-6 h-6 text-white ml-1" stroke="currentColor" fill="currentColor" />
                         </div>
                       </div>
                     )}
