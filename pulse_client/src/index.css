@@ -48,3 +48,12 @@
     clip-path: polygon(0% 0%, 100% 0%, 100% 98%, 98% 100%, 95% 97%, 92% 100%, 88% 97%, 85% 100%, 82% 98%, 78% 100%, 75% 97%, 72% 100%, 68% 98%, 65% 100%, 62% 97%, 58% 100%, 55% 98%, 52% 100%, 48% 97%, 45% 100%, 42% 98%, 38% 100%, 35% 97%, 32% 100%, 28% 98%, 25% 100%, 22% 97%, 18% 100%, 15% 98%, 12% 100%, 8% 97%, 5% 100%, 2% 98%, 0% 100%);
   }
 }
+
+@layer base {
+  *:focus-visible {
+    outline: none !important;
+    box-shadow: 0 0 0 2px #F6F0E4, 0 0 0 4px #B5502D !important;
+    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px !important;
+    transition: box-shadow 0.2s ease, border-radius 0.2s ease;
+  }
+}

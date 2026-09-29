@@ -1,11 +1,12 @@
 import PaperCard from '../../components/ui/PaperCard';
 import Doodle from '../../components/ui/Doodle';
+import { Link } from 'react-router-dom';
 
 export default function Pillars() {
   
   // Moved component definition outside of the JSX return
-  const LinkUnderline = ({ text }) => (
-    <a href="#" className="font-body font-medium text-lg text-teal-ink hover:text-terracotta flex items-center gap-2 transition-colors w-fit group">
+  const LinkUnderline = ({ text, to }) => (
+    <Link to={to} className="font-body font-medium text-lg text-teal-ink hover:text-terracotta flex items-center gap-2 transition-colors w-fit group">
       <span className="relative">
         {text}
         <svg className="absolute -bottom-1 left-0 w-full h-1.5 text-teal-ink/30 group-hover:text-terracotta/60 transition-colors" viewBox="0 0 100 10" preserveAspectRatio="none">
@@ -13,7 +14,7 @@ export default function Pillars() {
         </svg>
       </span>
       <span className="group-hover:translate-x-1 transition-transform">→</span>
-    </a>
+    </Link>
   );
 
   return (
@@ -38,7 +39,7 @@ export default function Pillars() {
           <p className="font-body text-ink/75 text-lg leading-relaxed mb-8 flex-grow">
             10,000+ datasets, papers and field reports from India's polar missions, searchable in plain language. No jargon required.
           </p>
-          <LinkUnderline text="Dive into data" />
+          <LinkUnderline text="Dive into data" to="/data-library" />
         </PaperCard>
 
         {/* Card 2: Media (Shifted down, overlaps left) */}
@@ -72,7 +73,7 @@ export default function Pillars() {
             </div>
           </div>
 
-          <LinkUnderline text="View gallery" />
+          <LinkUnderline text="View gallery" to="/media" />
         </PaperCard>
 
         {/* Card 3: Education (Shifted up, narrower, overlaps left) */}
@@ -82,7 +83,7 @@ export default function Pillars() {
           <p className="font-body text-ink/75 leading-relaxed mb-8 flex-grow">
             Lesson kits, virtual lab visits and live talks with scientists, built entirely for classrooms.
           </p>
-          <LinkUnderline text="For teachers" />
+          <LinkUnderline text="For teachers" to="/learn" />
         </PaperCard>
 
       </div>
