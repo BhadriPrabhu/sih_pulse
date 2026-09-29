@@ -81,6 +81,11 @@ export default function Doodle({ type, className = "w-14 h-14", stroke = "#1B1A1
         <path d="M13 6L19 12L13 18" />
       </g>
     ),
+    bookmark: (
+      <g stroke={stroke} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill={fill}>
+        <path d="M6 3H18V21L12 16L6 21V3Z" />
+      </g>
+    ),
   };
 
   const isDivider = type === 'wavyDivider';
