@@ -40,51 +40,14 @@ export default function ExplorePage() {
     }
 
     setIsSearching(true);
-    const controller = new AbortController();
     let cancelled = false;
 
     const executeSearch = async () => {
       try {
-        const timeoutId = setTimeout(() => controller.abort(), 25000); // 25s client timeout
-        
-        const res = await fetch('/api/ask', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ query: initialQuery, context: getSearchContext() }),
-          signal: controller.signal
-        });
-        
-        clearTimeout(timeoutId);
-        
-        const textStr = await res.text();
-        
-        let data;
-        try {
-          data = JSON.parse(textStr);
-        } catch (err) {
-          console.error("Invalid JSON response:", res.status, textStr.substring(0, 200));
-          throw new Error("Invalid response format");
-        }
-
-        if (!res.ok) {
-          console.error("API failed:", res.status, data.attempts || data.error);
-          throw new Error("API responded with an error");
-        }
+        // --- AI DISABLED TEMPORARILY ---
+        await new Promise(resolve => setTimeout(resolve, 800));
 
         if (!cancelled) {
-          setResults({
-            answer: String(data.answer || ""),
-            keyTerms: Array.isArray(data.keyTerms) ? data.keyTerms.map(String) : [],
-            datasetIds: Array.isArray(data.datasetIds) ? data.datasetIds.map(String) : [],
-            mediaIds: Array.isArray(data.mediaIds) ? data.mediaIds.map(String) : [],
-            kitIds: Array.isArray(data.kitIds) ? data.kitIds.map(String) : [],
-            source: data.source,
-            model: data.model
-          });
-        }
-      } catch (error) {
-        if (!cancelled) {
-          console.warn("Using offline fallback due to API error or timeout.");
           const fallback = runFallbackSearch(initialQuery);
           setResults({
             answer: String(fallback.answer || ""),
@@ -95,6 +58,9 @@ export default function ExplorePage() {
             source: "offline"
           });
         }
+        
+      } catch (error) {
+        console.error("Search error:", error);
       } finally {
         if (!cancelled) {
           setIsSearching(false);
@@ -106,9 +72,11 @@ export default function ExplorePage() {
 
     return () => {
       cancelled = true;
-      controller.abort();
     };
-  }, [initialQuery, addSearch]);
+    
+  // Add the disable-next-line comment so your linter doesn't complain about the missing dependency
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialQuery]); // <-- FIX: Removed addSearch from this array
 
   const handleRefine = () => {
     if (prompt.trim() !== initialQuery) {
