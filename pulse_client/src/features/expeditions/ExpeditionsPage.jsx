@@ -21,7 +21,7 @@ export default function ExpeditionsPage() {
       title="India's polar journey" 
       terracottaWord="journey"
       subtitle="From the first landing in 1981 to modern year-round research stations."
-      heroCrop="right 60%" 
+      heroCrop="45% 60%"
     >
       <div className="max-w-5xl mx-auto px-6 pb-32 w-full mt-12">
         
@@ -56,7 +56,7 @@ export default function ExpeditionsPage() {
           </motion.div>
 
           {/* Timeline Entries */}
-          <div className="flex flex-col gap-20 md:gap-32 relative z-10">
+          <div className="flex flex-col gap-14 md:gap-20 relative z-10 mt-8">
             {expeditionsData.map((exp, index) => {
               const isEven = index % 2 === 0;
               
@@ -97,8 +97,8 @@ export default function ExpeditionsPage() {
                             <path d="M0 5 Q 50 8 100 3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                           </svg>
                         </span>
-                        <span className={`group-hover:translate-x-1 transition-transform ${isEven ? 'md:order-1 md:rotate-180 md:group-hover:-translate-x-1 md:group-hover:translate-x-0' : ''}`}>
-                          →
+                        <span className={`transition-transform ${isEven ? 'md:order-1 md:rotate-180' : ''}`}>
+                          <Doodle type="arrow" className="w-5 h-5 text-current group-hover:translate-x-1 transition-transform" />
                         </span>
                       </a>
                     </div>

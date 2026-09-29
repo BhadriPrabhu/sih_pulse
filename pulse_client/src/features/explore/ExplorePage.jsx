@@ -104,7 +104,7 @@ export default function ExplorePage() {
           {/* Dataset Slip 1 */}
           <PaperCard rotation={-2} className="w-64 min-h-[160px] p-5 !bg-[#F8F5EE] torn-edge relative !shadow-sm hover:!shadow-md">
             <div className="absolute top-2 left-1/2 -translate-x-1/2 w-8 h-2.5 bg-[#EBE5D6] rounded-full shadow-inner opacity-60" />
-            <p className="font-typewriter text-xs text-ink/50 uppercase tracking-widest mb-3 mt-2">Dataset // CSV</p>
+            <p className="font-typewriter text-sm text-ink/60 mb-2 mt-2">Dataset // csv</p>
             <p className="font-body font-medium text-ink leading-snug mb-4">Maitri Station Shelf Temp Probe (Depth: 200m)</p>
             <div className="flex justify-between items-end mt-auto pt-4 border-t border-ink/10 border-dashed">
               <span className="font-typewriter text-[10px] text-ink/60">2.4 MB</span>
@@ -122,7 +122,7 @@ export default function ExplorePage() {
 
           {/* Lesson Kit */}
           <PaperCard rotation={-1.5} className="w-72 min-h-[200px] flex flex-col p-6 !bg-[#F0F2ED] border-t-[12px] border-t-sage">
-            <p className="font-typewriter text-xs text-sage mb-2">Lesson Kit • Class 9-10</p>
+            <p className="font-typewriter text-sm text-sage mb-2">Lesson Kit • Class 9-10</p>
             <h4 className="font-grotesque text-xl text-ink mb-2">The Physics of Melting Ice</h4>
             <p className="font-body text-sm text-ink/70 mb-6">Interactive lab simulation showing the difference between sea ice and land ice melt.</p>
             <a href="#" className="font-hand text-lg text-sage hover:text-ink transition-colors mt-auto w-fit">Open folder →</a>
@@ -142,7 +142,7 @@ export default function ExplorePage() {
           {/* Dataset Slip 2 */}
           <PaperCard rotation={2.5} className="w-60 min-h-[160px] p-5 !bg-[#F8F5EE] torn-edge relative !shadow-sm hover:!shadow-md md:-mt-8">
             <div className="absolute top-2 left-1/2 -translate-x-1/2 w-8 h-2.5 bg-[#EBE5D6] rounded-full shadow-inner opacity-60" />
-            <p className="font-typewriter text-xs text-ink/50 uppercase tracking-widest mb-3 mt-2">Dataset // NetCDF</p>
+            <p className="font-typewriter text-sm text-ink/60 mb-2 mt-2">Dataset // NetCDF</p>
             <p className="font-body font-medium text-ink leading-snug mb-4">Thwaites Grounding Line Retreat Map</p>
             <div className="flex justify-between items-end mt-auto pt-4 border-t border-ink/10 border-dashed">
               <span className="font-typewriter text-[10px] text-ink/60">18.1 MB</span>

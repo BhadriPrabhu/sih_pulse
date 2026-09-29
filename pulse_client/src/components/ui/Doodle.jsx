@@ -69,7 +69,18 @@ export default function Doodle({ type, className = "w-14 h-14", stroke = "#1B1A1
         strokeDasharray="8 6" 
         fill="none" 
       />
-    )
+    ),
+    play: (
+      <g stroke={stroke} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill={fill}>
+        <path d="M7 5L19 12L7 19Z" />
+      </g>
+    ),
+    arrow: (
+      <g stroke={stroke} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none">
+        <path d="M5 12H19" />
+        <path d="M13 6L19 12L13 18" />
+      </g>
+    ),
   };
 
   const isDivider = type === 'wavyDivider';
