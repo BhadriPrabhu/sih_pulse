@@ -6,7 +6,7 @@ export default async function handler(req, res) {
   const modelName = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
 
   if (!apiKey) {
-    return res.status(500).json({ error: 'GEMINI_API_KEY is not set in environment.' });
+    return res.status(500).json({ error: 'GEMINI_API_KEY is missing' });
   }
 
   const systemPrompt = `You are a polar science guide for Indian students and researchers. 
@@ -36,15 +36,30 @@ Respond strictly in JSON format:
       })
     });
 
-    if (!response.ok) throw new Error('API Error');
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Gemini API rejected request: ${errorText}`);
+    }
+    
     const data = await response.json();
     
-    const jsonString = data.candidates[0].content.parts[0].text;
-    const result = JSON.parse(jsonString);
+    // 1. Safely extract the text
+    let jsonString = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!jsonString) throw new Error("Gemini returned an empty or invalid response format.");
+
+    // 2. Strip any markdown code blocks Gemini might have sneakily added
+    jsonString = jsonString.replace(/```json/gi, '').replace(/```/g, '').trim();
     
+    // 3. Parse and return
+    const result = JSON.parse(jsonString);
     res.status(200).json(result);
+
   } catch (error) {
     console.error("Gemini API Error:", error);
-    res.status(500).json({ error: 'Failed to generate response' });
+    // Send the actual error message back to the frontend so you can read it in the Network tab
+    res.status(500).json({ 
+      error: 'Failed to generate response', 
+      details: error.message 
+    });
   }
 }
