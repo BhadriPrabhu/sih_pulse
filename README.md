@@ -16,6 +16,31 @@ This application presents a polished, responsive interface for:
 
 The current implementation is a React + Vite frontend focused on creating an immersive landing experience and content-driven product journey.
 
+## System Architecture
+
+```mermaid
+graph TD
+  User[User / Researcher]
+  Hosting[Vercel Hosting<br/>Static SPA + Serverless Functions]
+  Client[Pulse Web Client<br/>React 19 + Vite + React Router]
+  Content[Bundled Content and Search<br/>JavaScript modules]
+  Storage[(Browser Local Storage<br/>Web Storage API)]
+  Weather[Open-Meteo Forecast API<br/>REST / JSON]
+  Ask[Q&A Endpoint<br/>Vercel Node.js Function: api/ask.js]
+  Gemini[Google Gemini API<br/>Gemini 2.5 Flash / REST]
+
+  User -->|HTTPS page access| Hosting
+  Hosting -->|Static assets and SPA fallback| Client
+  Client -->|Module imports and offline search| Content
+  Client -->|Read and write saved items, searches, and auth state| Storage
+  Client -->|HTTPS GET / JSON forecast response| Weather
+  Hosting -->|Routes /api/ask| Ask
+  Client -.->|POST /api/ask; endpoint exists but current UI does not call it| Ask
+  Ask -->|HTTPS JSON model discovery and content generation| Gemini
+```
+
+The Explore page currently uses bundled offline search rather than calling `/api/ask`. The Q&A function is deployed separately and calls Gemini when invoked. No external database is configured; saved items, recent searches, bookings, and client auth state are stored in the user's browser.
+
 ## Tech Stack
 
 - React 19
